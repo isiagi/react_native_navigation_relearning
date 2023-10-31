@@ -1,162 +1,74 @@
-import * as React from "react";
-import { View, Text, Button, TextInput, Image } from "react-native";
+import "react-native-gesture-handler";
+
+import { View, Text } from "react-native";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-function HomeScreen({ route, navigation }) {
-  // Get data from previous screen
-  React.useEffect(() => {
-    if (route.params?.post) {
-      // Post updated, do something with `route.params.post`
-      // For example, send the post to the server
-    }
-  }, [route.params?.post]);
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-  const [count, setCount] = React.useState(0);
+const Tab = createBottomTabNavigator();
 
-  React.useEffect(() => {
-    // Use `setOptions` to update the button that we previously specified
-    // Now the button includes an `onPress` handler to update the count
-    navigation.setOptions({
-      headerRight: () => (
-        <Button onPress={() => setCount((c) => c + 1)} title="Update count" />
-      ),
-    });
-  }, [navigation]);
+function Feed() {
+  return <Text>Feed</Text>;
+}
 
+function Messages() {
+  return <Text>Messages</Text>;
+}
+
+function Profile() {
+  return <Text>Profile</Text>;
+}
+
+function Settings() {
+  return <Text>Settings</Text>;
+}
+
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
+const Drawer = createDrawerNavigator();
+
+function Root() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() =>
-          navigation.navigate("Details", {
-            itemId: 86,
-            otherParam: "anything i want",
-          })
-        }
-      />
-      <Button
-        title="Create post"
-        onPress={() => navigation.navigate("CreatePost")}
-      />
-      <Text style={{ margin: 10 }}>Post: {route.params?.post}</Text>
-      <Text>Count: {count}</Text>
-    </View>
+    <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Settings" component={Settings} />
+    </Drawer.Navigator>
   );
 }
 
-function DetailsScreen({ route, navigation }) {
-  const { itemId, otherParam } = route.params;
+function Home() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Details Screen</Text>
-      <Text>itemId: {JSON.stringify(itemId)}</Text>
-      <Text>otherParam: {JSON.stringify(otherParam)}</Text>
-      <Button
-        title="Go to Details... again"
-        onPress={() =>
-          navigation.push("Details", {
-            itemId: Math.floor(Math.random() * 100),
-          })
-        }
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Feed"
+        component={Feed}
+        options={{ headerShown: false }}
       />
-      <Button title="Go to Home" onPress={() => navigation.navigate("Home")} />
-      <Button title="Go Back" onPress={() => navigation.goBack()} />
-      <Button
-        title="Go back to first screen in stack"
-        onPress={() => navigation.popToTop()}
-      />
-    </View>
+      <Tab.Screen name="Messages" component={Messages} />
+    </Tab.Navigator>
   );
 }
-
-// send data to the screen we are from.
-function CreatePostScreen({ navigation, route }) {
-  const [postText, setPostText] = React.useState("");
-
-  return (
-    <>
-      <TextInput
-        multiline
-        placeholder="What's on your mind?"
-        style={{ height: 200, padding: 10, backgroundColor: "white" }}
-        value={postText}
-        onChangeText={setPostText}
-      />
-      <Button
-        title="Done"
-        onPress={() => {
-          // Pass and merge params back to home screen
-          navigation.navigate({
-            name: "Home",
-            params: { post: postText },
-            merge: true,
-          });
-        }}
-      />
-    </>
-  );
-}
-
-function LogoTitle() {
-  return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={{
-        uri: "https://images.unsplash.com/photo-1682687982107-14492010e05e?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8",
-      }}
-    />
-  );
-}
-
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        // All screens options
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#f4511e",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-        }}
-      >
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Root"
+          component={Root}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
-          // options on one screen
-          // options={{
-          //   title: "My home",
-          //   headerStyle: {
-          //     backgroundColor: "#f4511e",
-          //   },
-          //   headerTintColor: "#fff",
-          //   headerTitleStyle: {
-          //     fontWeight: "bold",
-          //   },
-          // }}
-          options={{
-            headerTitle: (props) => <LogoTitle {...props} />,
-            // headerRight: () => (
-            //   <Button onPress={() => alert("This is a button")} title="Info" />
-            // ),
-            headerRight: () => <Button title="Info" />,
-          }}
+          component={Home}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Details"
-          component={DetailsScreen}
-          // initialParams
-          initialParams={{ itemId: 42 }}
-          options={({ route }) => ({ title: route.params.otherParam })}
-        />
-        <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Settings" component={Settings} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -164,15 +76,44 @@ function App() {
 
 export default App;
 
-// Updating params
+// Important Notes
+// Each navigator keeps its own navigation history
+// Each navigator has its own options
+// Each screen in a navigator has its own params
+// Navigation actions are handled by current navigator and bubble up if couldn't be handled
+// Navigator specific methods are available in the navigators nested inside
+// Nested navigators don't receive parent's events
+// Parent navigator's UI is rendered on top of child navigator
 
-// navigation.setParams({
-//   query: 'someText',
+// Here, you might want to navigate to the Root screen from your Feed component:
+
+// navigation.navigate('Root');
+
+// navigation.navigate('Root', { screen: 'Profile' });
+
+// Passing params to a screen in a nested navigator
+// You can also pass params by specifying a params key:
+
+// navigation.navigate('Root', {
+//   screen: 'Profile',
+//   params: { user: 'jane' },
 // });
 
-// Passing params to nested navigators
+// You can follow similar approach for deeply nested screens. Note that the second argument to navigate here is just params, so you can do something like:
 
-// navigation.navigate('Account', {
+// navigation.navigate('Root', {
 //   screen: 'Settings',
-//   params: { user: 'jane' },
+//   params: {
+//     screen: 'Sound',
+//     params: {
+//       screen: 'Media',
+//     },
+//   },
+// });
+
+// If you need to render the initial route specified in the navigator, you can disable the behaviour of using the specified screen as the initial screen by setting initial: false:
+
+// navigation.navigate('Root', {
+//   screen: 'Settings',
+//   initial: false,
 // });
