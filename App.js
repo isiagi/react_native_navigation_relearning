@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text, Button, TextInput } from "react-native";
+import { View, Text, Button, TextInput, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -86,22 +86,56 @@ function CreatePostScreen({ navigation, route }) {
   );
 }
 
+function LogoTitle() {
+  return (
+    <Image
+      style={{ width: 50, height: 50 }}
+      source={{
+        uri: "https://images.unsplash.com/photo-1682687982107-14492010e05e?auto=format&fit=crop&q=60&w=700&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8",
+      }}
+    />
+  );
+}
+
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        // All screens options
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      >
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: "Overview" }}
+          // options on one screen
+          // options={{
+          //   title: "My home",
+          //   headerStyle: {
+          //     backgroundColor: "#f4511e",
+          //   },
+          //   headerTintColor: "#fff",
+          //   headerTitleStyle: {
+          //     fontWeight: "bold",
+          //   },
+          // }}
+          options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
         />
         <Stack.Screen
           name="Details"
           component={DetailsScreen}
           // initialParams
           initialParams={{ itemId: 42 }}
+          options={({ route }) => ({ title: route.params.otherParam })}
         />
         <Stack.Screen name="CreatePost" component={CreatePostScreen} />
       </Stack.Navigator>
