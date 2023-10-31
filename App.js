@@ -110,3 +110,16 @@ function App() {
 }
 
 export default App;
+
+// Updating params
+
+// navigation.setParams({
+//   query: 'someText',
+// });
+
+// Passing params to nested navigators
+
+// navigation.navigate('Account', {
+//   screen: 'Settings',
+//   params: { user: 'jane' },
+// });
